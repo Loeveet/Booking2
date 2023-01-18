@@ -192,12 +192,13 @@ namespace Booked2.Models
                 .SingleOrDefault();
 
             var p = db.Persons
-                    .Where(x => x.Id == bookedPersonId)
-                    .SingleOrDefault();
+                .Include(x => x.Bookings)
+                .Where(x => x.Id == bookedPersonId)
+                .SingleOrDefault();
 
             if (bookedPersonId is not null)
             {
-                Console.WriteLine($"Är du helt säker på att du vill byta namn på bokningen?");
+                Console.WriteLine($"Är du helt säker på att du vill byta signatur på bokningen?");
                 Console.WriteLine("[J] för ja");
                 Console.WriteLine("[N] för nej");
                 var answer = Console.ReadKey(true).KeyChar;
@@ -207,7 +208,7 @@ namespace Booked2.Models
                     case 'j':
                         Console.WriteLine("Ange nytt namn för bokningen");
                         p.Name = Console.ReadLine();
-                        Console.WriteLine("Namnet är ändrat. Tryck på valfri tangent");
+                        Console.WriteLine("Signaturen är ändrat. Tryck på valfri tangent");
                         break;
                     default:
                         Console.WriteLine("Du valde att inte ändra namnet. Tryck på valfri tangent");
@@ -250,7 +251,7 @@ namespace Booked2.Models
                 {
                     case 'J':
                     case 'j':
-                        var removeBooking = db.Bookings.Where(x => x.PersonId == bookedPersonId).SingleOrDefault();
+                        var removeBooking = db.Bookings.Where(x => x.PersonId == bookedPersonId && x.Id == id).SingleOrDefault();
                         removeBooking.PersonId = null;
                         db.SaveChanges();
                         Console.WriteLine("Bokningen är borttagen. Tryck på valfri tangent");
@@ -304,9 +305,9 @@ namespace Booked2.Models
                 foreach (var x in group.GroupBy(x => x.DayName))
                 {
                     Console.WriteLine($"\t{x.Key}");
-                    foreach(var y in x)
+                    foreach (var y in x)
 
-                    Console.WriteLine($"\t\t{y.PersonName} har bokat {y.ConfRoomName}. BokningsId [{y.BookingId}]");
+                        Console.WriteLine($"\t\t{y.PersonName} har bokat {y.ConfRoomName}. BokningsId [{y.BookingId}]");
                 }
             }
             Console.WriteLine("----------------------");

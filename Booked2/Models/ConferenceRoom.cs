@@ -9,10 +9,6 @@ namespace Booked2.Models
 {
     public partial class ConferenceRoom
     {
-        public ConferenceRoom()
-        {
-            Bookings = new HashSet<Booking>();
-        }
         public int Id { get; set; }
         public string Name { get; set; }
         public int NrOfSeats { get; set; }

@@ -109,8 +109,8 @@ namespace Booked2.Models
                 }
             }
             Console.WriteLine("\n======================================\n");
-            Console.WriteLine("Ange signatur att boka rum med");
-            var name = Console.ReadLine();
+            Console.WriteLine("Ange signatur att boka rum med. Max 14 tecken.");
+            var name = CheckNameForMaxLength();
             db.Persons.Add(new Person { Name = name });
             db.SaveChanges();
 
@@ -129,6 +129,16 @@ namespace Booked2.Models
             db.SaveChanges();
             Console.ReadKey(true);
 
+        }
+        private static string CheckNameForMaxLength()
+        {
+            var input = Console.ReadLine();
+            while (input.Length > 14)
+            {
+                Console.WriteLine("Din valda signatur är för lång. Välj en kortare. ");
+                input = Console.ReadLine();
+            }
+            return input;
         }
     }
 }

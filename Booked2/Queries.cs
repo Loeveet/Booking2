@@ -27,22 +27,48 @@ namespace Booked2
                 switch (choice)
                 {
                     case '1':
-                        Queries.TotalBookings();
+                        TotalBookings();
                         break;
                     case '2':
-                        Queries.MostPopularRoom();
+                        MostPopularRoom();
                         break;
                     case '3':
-                        // Bokat per vecka. Antal bokningar / antalet möjliga bokningar grupperat på vecka
+                        TotalBookingsPercentage();
                         break;
                     case '4':
-                        // Bokat över alla bokningsbara veckor antal bokningar / antalet möjliga bokningar totalt
+                        TotalBookingsPerWeekPercentage();
+                        // Bokat per vecka. Antal bokningar / antalet möjliga bokningar grupperat på vecka
                         break;
                     case '0':
                         loop = false;
                         break;
                 }
             }
+        }
+        private static void TotalBookingsPerWeekPercentage()
+        {
+            using var db = new Booked2Context();
+            Console.Clear();
+            var week = db.Bookings
+                .ToList()
+                .GroupBy(x => x.WeekNumber);
+
+            foreach (var z in week)
+            {
+                Console.WriteLine($"Vecka {z.Key} är {((Convert.ToDouble(z.Where(x => x.PersonId != null).Count()) / z.Count() * 100)).ToString("0.##")} procent bokat");
+
+
+            }
+            Console.ReadKey();
+        }
+
+        private static void TotalBookingsPercentage()
+        {
+            using var db = new Booked2Context();
+            Console.Clear();
+            double percentBooked = (Convert.ToDouble(db.Bookings.Where(x => x.PersonId != null).Count()) / Convert.ToDouble(db.Bookings.Count())) * 100;
+            Console.WriteLine($"Just nu är {percentBooked.ToString("0.##")} procent av de bokningsbara objekten bokade");
+            Console.ReadKey(true);
         }
         private static void TotalBookings()
         {
@@ -64,12 +90,15 @@ namespace Booked2
                 .Include(x => x.ConferenceRoom)
                 .ToList();
 
-            var p = result
+            var group = result
                 .GroupBy(x => x.ConferenceRoom)
-                .OrderByDescending(x => x.Key.Bookings.Count)
-                .FirstOrDefault();
+                .OrderByDescending(x => x.Key.Bookings.Count);
+            foreach (var room in group)
+            {
 
-            Console.WriteLine($"Det rummet med flest bokningar är {p.Key.Name} med {p.Key.Bookings.Count} stycken bokningar");
+                Console.WriteLine($"{room.Key.Name} har {(room.Key.Bookings.Count == 1 ? room.Key.Bookings.Count + " bokning" : room.Key.Bookings.Count + " stycken bokningar")}");
+
+            }
             Console.ReadKey(true);
 
         }
