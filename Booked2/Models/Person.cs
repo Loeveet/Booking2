@@ -13,7 +13,8 @@ namespace Booked2.Models
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public virtual ICollection<Booking> Bookings { get; set; }
+        //public virtual ICollection<Booking> Bookings { get; set; }
+        public virtual Booking Booking { get; set; }
 
         internal static void BookRoom()
         {
