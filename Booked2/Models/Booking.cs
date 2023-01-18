@@ -191,9 +191,14 @@ namespace Booked2.Models
                 .Select(x => x.PersonId)
                 .SingleOrDefault();
 
-            var p = db.Persons
-                .Include(x => x.Bookings)
-                .Where(x => x.Id == bookedPersonId)
+            //var p = db.Persons
+            //    .Include(x => x.Bookings)
+            //    .Where(x => x.Id == bookedPersonId)
+            //    .SingleOrDefault();
+
+            var x = db.Bookings
+                .Include(x => x.Person)
+                .Where(x => x.Id == id)
                 .SingleOrDefault();
 
             if (bookedPersonId is not null)
@@ -207,7 +212,14 @@ namespace Booked2.Models
                     case 'J':
                     case 'j':
                         Console.WriteLine("Ange nytt namn för bokningen");
-                        p.Name = Console.ReadLine();
+                        Person person = new Person { Name = Console.ReadLine()};
+                        db.Add(person);
+                        db.SaveChanges();
+                        var person1 = db.Persons
+                            .Where(x => x.Name == person.Name)
+                            .SingleOrDefault();
+                        x.PersonId = person1.Id;
+                        //p.Name = Console.ReadLine();
                         Console.WriteLine("Signaturen är ändrat. Tryck på valfri tangent");
                         break;
                     default:
