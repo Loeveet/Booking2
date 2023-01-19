@@ -51,7 +51,8 @@ namespace Booked2
             var week = db.Bookings
                 .ToList()
                 .GroupBy(x => x.WeekNumber);
-
+            Console.WriteLine("Andel bokade rum i procent per vecka");
+            Console.WriteLine("------------------------------------");
             foreach (var z in week)
             {
                 Console.WriteLine($"Vecka {z.Key} är {((Convert.ToDouble(z.Where(x => x.PersonId != null).Count()) / z.Count() * 100)).ToString("0.##")} procent bokat");
@@ -66,6 +67,8 @@ namespace Booked2
             using var db = new Booked2Context();
             Console.Clear();
             double percentBooked = (Convert.ToDouble(db.Bookings.Where(x => x.PersonId != null).Count()) / Convert.ToDouble(db.Bookings.Count())) * 100;
+            Console.WriteLine("Andel bokade rum i procent");
+            Console.WriteLine("--------------------------");
             Console.WriteLine($"Just nu är {percentBooked.ToString("0.##")} procent av de bokningsbara objekten bokade");
             Console.ReadKey(true);
         }
@@ -75,7 +78,9 @@ namespace Booked2
             Console.Clear();
             var totalBookings = db.Bookings
                 .Where(x => x.PersonId != null)
-                .Count();
+                .Count(); 
+            Console.WriteLine("Antal bokningar");
+            Console.WriteLine("---------------");
             Console.WriteLine($"Det finns för tillfället {totalBookings} aktiva bokningar");
             Console.ReadKey(true);
         }
@@ -90,7 +95,8 @@ namespace Booked2
                 .ToList()
                 .GroupBy(x => x.ConferenceRoom)
                 .OrderByDescending(x => x.Key.Bookings.Count);
-
+            Console.WriteLine("Populäraste rum att boka");
+            Console.WriteLine("------------------------");
             foreach (var room in result)
             {
 
@@ -110,7 +116,8 @@ namespace Booked2
                 .ToList()
                 .GroupBy(x => x.Day)
                 .OrderByDescending(x => x.Key.Bookings.Count);
-
+            Console.WriteLine("Populäraste dag att boka");
+            Console.WriteLine("------------------------");
             foreach (var room in result)
             {
 
@@ -122,22 +129,15 @@ namespace Booked2
         }
         private static void MostPopularRoomDay()
         {
-            using var db = new Booked2Context();
             Console.Clear();
-            var result = db.Bookings
-                .Where(x => x.PersonId != null)
-                .Include(x => x.ConferenceRoom)
-                .Include(x => x.Day)
-                .ToList()
-                .GroupBy(x => x.ConferenceRoom)
-                .OrderByDescending(x => x.Key.Bookings.Count);
-
-            foreach (var room in result)
+            var xxx = RoomDay.MostPopularRoomDay();
+            Console.WriteLine("Populäraste dag per rum");
+            Console.WriteLine("-----------------------");
+            foreach(var x in xxx) 
             {
-
-                Console.WriteLine($"{room.Key.Name} har {(room.Key.Bookings.Count == 1 ? room.Key.Bookings.Count + " bokning" : room.Key.Bookings.Count + " stycken bokningar")}");
-
+                Console.WriteLine($"{x.NrOfBookings} - {x.Room}\t{x.Day}");
             }
+
             Console.ReadKey(true);
         }
         private static void MostPopular()
