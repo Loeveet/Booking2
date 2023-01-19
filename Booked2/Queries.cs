@@ -18,26 +18,25 @@ namespace Booked2
                 Console.Clear();
 
                 Console.WriteLine("1. Totalt antal aktiva bokningar");
-                Console.WriteLine("2. Mest bokade konferensrummet");
+                Console.WriteLine("2. Mest bokningar");
                 Console.WriteLine("3. Procent bokat per vecka");
                 Console.WriteLine("4. Procent bokat över alla bokningsbara veckor");
                 Console.WriteLine("0. Backa");
 
-                var choice = Console.ReadKey(true).KeyChar;
-                switch (choice)
+                var input = Console.ReadKey(true).KeyChar;
+                switch (input)
                 {
                     case '1':
                         TotalBookings();
                         break;
                     case '2':
-                        MostPopularRoom();
+                        MostPopular();
                         break;
                     case '3':
-                        TotalBookingsPercentage();
+                        TotalBookingsPerWeekPercentage();
                         break;
                     case '4':
-                        TotalBookingsPerWeekPercentage();
-                        // Bokat per vecka. Antal bokningar / antalet möjliga bokningar grupperat på vecka
+                        TotalBookingsPercentage();
                         break;
                     case '0':
                         loop = false;
@@ -88,12 +87,11 @@ namespace Booked2
             var result = db.Bookings
                 .Where(x => x.PersonId != null)
                 .Include(x => x.ConferenceRoom)
-                .ToList();
-
-            var group = result
+                .ToList()
                 .GroupBy(x => x.ConferenceRoom)
                 .OrderByDescending(x => x.Key.Bookings.Count);
-            foreach (var room in group)
+
+            foreach (var room in result)
             {
 
                 Console.WriteLine($"{room.Key.Name} har {(room.Key.Bookings.Count == 1 ? room.Key.Bookings.Count + " bokning" : room.Key.Bookings.Count + " stycken bokningar")}");
@@ -102,5 +100,77 @@ namespace Booked2
             Console.ReadKey(true);
 
         }
+        private static void MostPopularDay()
+        {
+            using var db = new Booked2Context();
+            Console.Clear();
+            var result = db.Bookings
+                .Where(x => x.PersonId != null)
+                .Include(x => x.Day)
+                .ToList()
+                .GroupBy(x => x.Day)
+                .OrderByDescending(x => x.Key.Bookings.Count);
+
+            foreach (var room in result)
+            {
+
+                Console.WriteLine($"{room.Key.Name} har {(room.Key.Bookings.Count == 1 ? room.Key.Bookings.Count + " bokning" : room.Key.Bookings.Count + " stycken bokningar")}");
+
+            }
+            Console.ReadKey(true);
+
+        }
+        private static void MostPopularRoomDay()
+        {
+            using var db = new Booked2Context();
+            Console.Clear();
+            var result = db.Bookings
+                .Where(x => x.PersonId != null)
+                .Include(x => x.ConferenceRoom)
+                .Include(x => x.Day)
+                .ToList()
+                .GroupBy(x => x.ConferenceRoom)
+                .OrderByDescending(x => x.Key.Bookings.Count);
+
+            foreach (var room in result)
+            {
+
+                Console.WriteLine($"{room.Key.Name} har {(room.Key.Bookings.Count == 1 ? room.Key.Bookings.Count + " bokning" : room.Key.Bookings.Count + " stycken bokningar")}");
+
+            }
+            Console.ReadKey(true);
+        }
+        private static void MostPopular()
+        {
+            var loop = true;
+            while (loop)
+            {
+                Console.Clear();
+
+                Console.WriteLine("1. Mest bokade konferensrum");
+                Console.WriteLine("2. Mest bokade dag");
+                Console.WriteLine("3. Mest bokade konferenserum/dag");
+                Console.WriteLine("0. Backa");
+
+
+                var input = Console.ReadKey(true).KeyChar;
+                switch (input)
+                {
+                    case '1':
+                        MostPopularRoom();
+                        break;
+                    case '2':
+                        MostPopularDay();
+                        break;
+                    case '3':
+                        MostPopularRoomDay();
+                        break;
+                    case '0':
+                        loop = false;
+                        break;
+                }
+            }
+        }
+
     }
 }
